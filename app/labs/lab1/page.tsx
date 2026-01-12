@@ -257,7 +257,7 @@ export default function Lab1() {
 
             <br />
 
-            Please {" "} <a href="https://www.github.com/LOTaher/CS4550-A1" id="wd-github">click here</a>
+            Please {" "} <a href="https://github.com/LOTaher/kambaz-next-js" id="wd-github">click here</a>
             {" "} to navigate to this repository
 
         </div>

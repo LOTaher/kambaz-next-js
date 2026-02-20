@@ -1,5 +1,4 @@
 "use client";
-
 import { usePathname } from "next/navigation";
 import { AiOutlineDashboard } from "react-icons/ai";
 import { IoCalendarOutline } from "react-icons/io5";
@@ -10,8 +9,15 @@ import Link from "next/link";
 
 export default function KambazNavigation() {
   const pathname = usePathname();
-
   const isActive = (path: string) => pathname === path;
+
+  const links = [
+    { label: "Dashboard", path: "/dashboard", icon: AiOutlineDashboard },
+    { label: "Courses", path: "/dashboard", icon: LiaBookSolid },
+    { label: "Calendar", path: "/calendar", icon: IoCalendarOutline },
+    { label: "Inbox", path: "/inbox", icon: FaInbox },
+    { label: "Labs", path: "/labs", icon: LiaCogSolid },
+  ];
 
   return (
     <ListGroup
@@ -28,85 +34,29 @@ export default function KambazNavigation() {
         <img src="/images/NEU.png" width="75px" alt="Northeastern University" />
       </ListGroupItem>
       <ListGroupItem className="bg-black border-0 text-center">
-        <Link
-          href="/account"
-          className="text-white text-decoration-none"
-        >
+        <Link href="/account" className="text-white text-decoration-none">
           <FaRegCircleUser className="fs-1 text-white" />
           <br />
           Account
         </Link>
       </ListGroupItem>
-      <ListGroupItem
-        className={`border-0 text-center ${isActive("/dashboard") ? "bg-white" : "bg-black"
-          }`}
-      >
-        <Link
-          href="/dashboard"
-          className={`text-decoration-none ${isActive("/dashboard") ? "text-danger" : "text-white"
+      {links.map((link) => (
+        <ListGroupItem
+          key={link.label}
+          className={`border-0 text-center ${isActive(link.path) ? "bg-white" : "bg-black"
             }`}
         >
-          <AiOutlineDashboard className="fs-1" />
-          <br />
-          Dashboard
-        </Link>
-      </ListGroupItem>
-      <ListGroupItem
-        className={`border-0 text-center ${isActive("/courses") ? "bg-white" : "bg-black"
-          }`}
-      >
-        <Link
-          href="/courses"
-          className={`text-decoration-none ${isActive("/courses") ? "text-danger" : "text-white"
-            }`}
-        >
-          <LiaBookSolid className="fs-1" />
-          <br />
-          Courses
-        </Link>
-      </ListGroupItem>
-      <ListGroupItem
-        className={`border-0 text-center ${isActive("/calendar") ? "bg-white" : "bg-black"
-          }`}
-      >
-        <Link
-          href="/calendar"
-          className={`text-decoration-none ${isActive("/calendar") ? "text-danger" : "text-white"
-            }`}
-        >
-          <IoCalendarOutline className="fs-1" />
-          <br />
-          Calendar
-        </Link>
-      </ListGroupItem>
-      <ListGroupItem
-        className={`border-0 text-center ${isActive("/inbox") ? "bg-white" : "bg-black"
-          }`}
-      >
-        <Link
-          href="/inbox"
-          className={`text-decoration-none ${isActive("/inbox") ? "text-danger" : "text-white"
-            }`}
-        >
-          <FaInbox className="fs-1" />
-          <br />
-          Inbox
-        </Link>
-      </ListGroupItem>
-      <ListGroupItem
-        className={`border-0 text-center ${isActive("/labs") ? "bg-white" : "bg-black"
-          }`}
-      >
-        <Link
-          href="/labs"
-          className={`text-decoration-none ${isActive("/labs") ? "text-danger" : "text-white"
-            }`}
-        >
-          <LiaCogSolid className="fs-1" />
-          <br />
-          Labs
-        </Link>
-      </ListGroupItem>
+          <Link
+            href={link.path}
+            className={`text-decoration-none ${isActive(link.path) ? "text-danger" : "text-white"
+              }`}
+          >
+            <link.icon className="fs-1" />
+            <br />
+            {link.label}
+          </Link>
+        </ListGroupItem>
+      ))}
     </ListGroup>
   );
 }

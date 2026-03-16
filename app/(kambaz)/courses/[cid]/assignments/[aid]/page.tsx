@@ -1,29 +1,24 @@
 "use client";
-
+import { useParams } from "next/navigation";
+import Link from "next/link";
 import { Button, Form } from "react-bootstrap";
+import * as db from "../../../../database";
 
 export default function AssignmentEditor() {
+    const { cid, aid } = useParams();
+    const assignment = db.assignments.find((a) => a._id === aid);
+
     return (
         <div id="wd-assignments-editor" className="p-4">
             <Form.Group className="mb-3">
                 <Form.Label>Assignment Name</Form.Label>
-                <Form.Control defaultValue="A1" />
+                <Form.Control defaultValue={assignment?.title || ""} />
             </Form.Group>
             <Form.Group className="mb-4">
                 <Form.Control
                     as="textarea"
                     rows={8}
-                    defaultValue={`The assignment is available online.
-
-Submit a link to the landing page of your Web application running on Netlify.
-
-The landing page should include the following:
-• Your full name and section
-• Links to each of the lab assignments
-• Link to the Kanbas application
-• Links to all relevant source code repositories
-
-The Kanbas application should include a link to navigate back to the landing page`}
+                    defaultValue={assignment?.description || ""}
                 />
             </Form.Group>
             <Form.Group className="row mb-3">
@@ -31,7 +26,7 @@ The Kanbas application should include a link to navigate back to the landing pag
                     Points
                 </Form.Label>
                 <div className="col-sm-9">
-                    <Form.Control defaultValue={100} />
+                    <Form.Control defaultValue={assignment?.points || 100} />
                 </div>
             </Form.Group>
             <Form.Group className="row mb-3">
@@ -67,31 +62,12 @@ The Kanbas application should include a link to navigate back to the landing pag
                         <option>Online</option>
                         <option>In Person</option>
                     </Form.Select>
-
                     <strong>Online Entry Options</strong>
-
-                    <Form.Check
-                        type="checkbox"
-                        label="Text Entry"
-                        className="mt-2"
-                    />
-                    <Form.Check
-                        type="checkbox"
-                        label="Website URL"
-                        defaultChecked
-                    />
-                    <Form.Check
-                        type="checkbox"
-                        label="Media Recordings"
-                    />
-                    <Form.Check
-                        type="checkbox"
-                        label="Student Annotation"
-                    />
-                    <Form.Check
-                        type="checkbox"
-                        label="File Uploads"
-                    />
+                    <Form.Check type="checkbox" label="Text Entry" className="mt-2" />
+                    <Form.Check type="checkbox" label="Website URL" defaultChecked />
+                    <Form.Check type="checkbox" label="Media Recordings" />
+                    <Form.Check type="checkbox" label="Student Annotation" />
+                    <Form.Check type="checkbox" label="File Uploads" />
                 </div>
             </Form.Group>
             <Form.Group className="row mb-4">
@@ -103,26 +79,25 @@ The Kanbas application should include a link to navigate back to the landing pag
                     <Form.Select className="mb-3">
                         <option>Everyone</option>
                     </Form.Select>
-
                     <Form.Label><strong>Due</strong></Form.Label>
                     <Form.Control
-                        type="date"
+                        type="text"
                         className="mb-3"
-                        defaultValue="2024-05-13"
+                        defaultValue={assignment?.dueDate || ""}
                     />
                     <div className="row">
                         <div className="col">
                             <Form.Label><strong>Available From</strong></Form.Label>
                             <Form.Control
-                                type="date"
-                                defaultValue="2024-05-06"
+                                type="text"
+                                defaultValue={assignment?.availableFrom || ""}
                             />
                         </div>
                         <div className="col">
                             <Form.Label><strong>Until</strong></Form.Label>
                             <Form.Control
-                                type="date"
-                                defaultValue="2024-05-20"
+                                type="text"
+                                defaultValue={assignment?.availableUntil || ""}
                             />
                         </div>
                     </div>
@@ -130,12 +105,16 @@ The Kanbas application should include a link to navigate back to the landing pag
             </Form.Group>
             <hr />
             <div className="d-flex justify-content-end gap-2">
-                <Button variant="secondary" className="rounded-0">
-                    Cancel
-                </Button>
-                <Button variant="danger" className="rounded-0">
-                    Save
-                </Button>
+                <Link href={`/courses/${cid}/assignments`}>
+                    <Button variant="secondary" className="rounded-0">
+                        Cancel
+                    </Button>
+                </Link>
+                <Link href={`/courses/${cid}/assignments`}>
+                    <Button variant="danger" className="rounded-0">
+                        Save
+                    </Button>
+                </Link>
             </div>
         </div>
     );

@@ -1,120 +1,196 @@
 "use client";
+
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import { Button, Form } from "react-bootstrap";
-import * as db from "../../../../database";
+import { RootState } from "../../../../store";
+import { useDispatch, useSelector } from "react-redux";
+import { useState } from "react";
+import { Button, FormControl } from "react-bootstrap";
+import { addAssignment, updateAssignment } from "../reducer";
+import { useRouter } from "next/navigation";
+import * as client from "../../../client";
 
 export default function AssignmentEditor() {
-    const { cid, aid } = useParams();
-    const assignment = db.assignments.find((a) => a._id === aid);
+    const { aid, cid } = useParams();
+    const dispatch = useDispatch();
+    const router = useRouter();
+
+    const { assignments } = useSelector(
+        (state: RootState) => state.assignmentsReducer,
+    );
+
+    const currentAssignment = assignments.find(
+        (assignment) => assignment._id === aid,
+    );
+    const [assignment, setAssignment] = useState(
+        currentAssignment ?? {
+            course: cid,
+            title: "",
+            description: "",
+            points: 0,
+            dueDate: "",
+            availableDate: "",
+            untilDate: "",
+        },
+    );
+
+    const onSubmit = async () => {
+        if (currentAssignment) {
+            await onUpdateAssignment();
+        } else {
+            await onCreateAssignmentForCourse();
+        }
+        router.push(`/courses/${cid}/assignments`);
+    };
+
+    const onCreateAssignmentForCourse = async () => {
+        if (!cid) return;
+        const newAssignment = await client.createAssignmentForCourse(
+            cid as string,
+            assignment,
+        );
+        dispatch(addAssignment(newAssignment));
+    };
+
+    const onUpdateAssignment = async () => {
+        await client.updateAssignment(assignment);
+        dispatch(updateAssignment(assignment));
+    };
 
     return (
-        <div id="wd-assignments-editor" className="p-4">
-            <Form.Group className="mb-3">
-                <Form.Label>Assignment Name</Form.Label>
-                <Form.Control defaultValue={assignment?.title || ""} />
-            </Form.Group>
-            <Form.Group className="mb-4">
-                <Form.Control
-                    as="textarea"
-                    rows={8}
-                    defaultValue={assignment?.description || ""}
+        <div id="wd-assignments-editor">
+            <div className="d-flex flex-column gap-2">
+                <label htmlFor="wd-name">Assignment Name</label>
+                <FormControl
+                    id="wd-name"
+                    className="p-2 border"
+                    value={assignment.title}
+                    onChange={(e) => {
+                        setAssignment((prev) =>
+                            prev ? { ...prev, title: e.target.value } : prev,
+                        );
+                    }}
                 />
-            </Form.Group>
-            <Form.Group className="row mb-3">
-                <Form.Label className="col-sm-3 col-form-label text-end">
-                    Points
-                </Form.Label>
-                <div className="col-sm-9">
-                    <Form.Control defaultValue={assignment?.points || 100} />
-                </div>
-            </Form.Group>
-            <Form.Group className="row mb-3">
-                <Form.Label className="col-sm-3 col-form-label text-end">
-                    Assignment Group
-                </Form.Label>
-                <div className="col-sm-9">
-                    <Form.Select>
-                        <option>ASSIGNMENTS</option>
-                        <option>QUIZZES</option>
-                        <option>EXAMS</option>
-                        <option>HOMEWORK</option>
-                    </Form.Select>
-                </div>
-            </Form.Group>
-            <Form.Group className="row mb-3">
-                <Form.Label className="col-sm-3 col-form-label text-end">
-                    Display Grade As
-                </Form.Label>
-                <div className="col-sm-9">
-                    <Form.Select>
-                        <option>Percentage</option>
-                        <option>Raw Score</option>
-                    </Form.Select>
-                </div>
-            </Form.Group>
-            <Form.Group className="row mb-4">
-                <Form.Label className="col-sm-3 col-form-label text-end">
-                    Submission Type
-                </Form.Label>
-                <div className="col-sm-9 border p-3">
-                    <Form.Select className="mb-3">
-                        <option>Online</option>
-                        <option>In Person</option>
-                    </Form.Select>
-                    <strong>Online Entry Options</strong>
-                    <Form.Check type="checkbox" label="Text Entry" className="mt-2" />
-                    <Form.Check type="checkbox" label="Website URL" defaultChecked />
-                    <Form.Check type="checkbox" label="Media Recordings" />
-                    <Form.Check type="checkbox" label="Student Annotation" />
-                    <Form.Check type="checkbox" label="File Uploads" />
-                </div>
-            </Form.Group>
-            <Form.Group className="row mb-4">
-                <Form.Label className="col-sm-3 col-form-label text-end">
-                    Assign
-                </Form.Label>
-                <div className="col-sm-9 border p-3">
-                    <strong>Assign to</strong>
-                    <Form.Select className="mb-3">
-                        <option>Everyone</option>
-                    </Form.Select>
-                    <Form.Label><strong>Due</strong></Form.Label>
-                    <Form.Control
-                        type="text"
-                        className="mb-3"
-                        defaultValue={assignment?.dueDate || ""}
-                    />
-                    <div className="row">
-                        <div className="col">
-                            <Form.Label><strong>Available From</strong></Form.Label>
-                            <Form.Control
-                                type="text"
-                                defaultValue={assignment?.availableFrom || ""}
+            </div>
+            <br />
+            <div className="d-flex flex-column gap-2">
+                <label htmlFor="wd-name">Description</label>
+                <FormControl
+                    id="wd-description"
+                    className="p-2 border"
+                    value={assignment.description}
+                    onChange={(e) => {
+                        setAssignment((prev) =>
+                            prev ? { ...prev, description: e.target.value } : prev,
+                        );
+                    }}
+                />
+            </div>
+            <br />
+            <br />
+            <table className="w-100">
+                <tbody>
+                    <tr>
+                        <td className="pe-3 text-end align-top text-nowrap">
+                            <label htmlFor="wd-points" className="col-form-label">
+                                Points
+                            </label>
+                        </td>
+                        <td className="w-100">
+                            <FormControl
+                                id="wd-points"
+                                className="form-control w-100"
+                                value={assignment.points}
+                                onChange={(e) => {
+                                    const value = Number(e.currentTarget.value);
+                                    setAssignment((prev) =>
+                                        prev
+                                            ? { ...prev, points: Number.isNaN(value) ? 0 : value }
+                                            : prev,
+                                    );
+                                }}
                             />
-                        </div>
-                        <div className="col">
-                            <Form.Label><strong>Until</strong></Form.Label>
-                            <Form.Control
-                                type="text"
-                                defaultValue={assignment?.availableUntil || ""}
-                            />
-                        </div>
-                    </div>
-                </div>
-            </Form.Group>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td className="pe-3 text-end align-top text-nowrap">
+                            <label htmlFor="wd-assign-to" className="col-form-label">
+                                Assign To
+                            </label>
+                        </td>
+                        <td className="border p-3">
+                            <div className="d-flex flex-column">
+                                <label htmlFor="wd-due-date">
+                                    <strong>Due</strong>
+                                </label>
+                                <FormControl
+                                    type="date"
+                                    id="wd-due-date"
+                                    className="p-2 border mb-2"
+                                    value={assignment.dueDate.slice(0, 10)}
+                                    onChange={(e) => {
+                                        const d = e.currentTarget.value;
+                                        setAssignment((prev) =>
+                                            prev ? { ...prev, dueDate: `${d}T00:00:00-05:00` } : prev,
+                                        );
+                                    }}
+                                />
+                                <div className="d-flex gap-2">
+                                    <div className="d-flex flex-column">
+                                        <label htmlFor="wd-available-from">
+                                            <strong>Available From</strong>
+                                        </label>
+                                        <FormControl
+                                            type="date"
+                                            id="wd-available-from"
+                                            value={assignment.availableDate.slice(0, 10)}
+                                            className="p-2 border mb-2"
+                                            onChange={(e) => {
+                                                const d = e.currentTarget.value;
+                                                setAssignment((prev) =>
+                                                    prev
+                                                        ? { ...prev, availableDate: `${d}T00:00:00-05:00` }
+                                                        : prev,
+                                                );
+                                            }}
+                                        />
+                                    </div>
+                                    <div className="d-flex flex-column">
+                                        <label htmlFor="wd-available-until">
+                                            <strong>Until</strong>
+                                        </label>
+                                        <FormControl
+                                            type="date"
+                                            id="wd-available-until"
+                                            value={assignment.untilDate.slice(0, 10)}
+                                            className="p-2 border mb-2"
+                                            onChange={(e) => {
+                                                const d = e.currentTarget.value;
+                                                setAssignment((prev) =>
+                                                    prev
+                                                        ? { ...prev, untilDate: `${d}T00:00:00-05:00` }
+                                                        : prev,
+                                                );
+                                            }}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
             <hr />
             <div className="d-flex justify-content-end gap-2">
-                <Link href={`/courses/${cid}/assignments`}>
-                    <Button variant="secondary" className="rounded-0">
-                        Cancel
-                    </Button>
+                <Link
+                    href={`/courses/${cid}/assignments`}
+                    className="btn btn-secondary rounded-0"
+                >
+                    Cancel
                 </Link>
-                <Link href={`/courses/${cid}/assignments`}>
-                    <Button variant="danger" className="rounded-0">
-                        Save
-                    </Button>
-                </Link>
+                <Button onClick={onSubmit} className="btn btn-danger rounded-0">
+                    Save
+                </Button>
             </div>
         </div>
     );

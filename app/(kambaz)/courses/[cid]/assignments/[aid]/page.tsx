@@ -29,8 +29,8 @@ export default function AssignmentEditor() {
             description: "",
             points: 0,
             dueDate: "",
-            availableDate: "",
-            untilDate: "",
+            availableFrom: "",
+            availableUntil: "",
         },
     );
 
@@ -143,13 +143,13 @@ export default function AssignmentEditor() {
                                         <FormControl
                                             type="date"
                                             id="wd-available-from"
-                                            value={assignment.availableDate.slice(0, 10)}
+                                            value={(assignment.availableFrom ?? "").slice(0, 10)}
                                             className="p-2 border mb-2"
                                             onChange={(e) => {
                                                 const d = e.currentTarget.value;
                                                 setAssignment((prev) =>
                                                     prev
-                                                        ? { ...prev, availableDate: `${d}T00:00:00-05:00` }
+                                                        ? { ...prev, availableFrom: `${d}T00:00:00-05:00` }
                                                         : prev,
                                                 );
                                             }}
@@ -162,13 +162,13 @@ export default function AssignmentEditor() {
                                         <FormControl
                                             type="date"
                                             id="wd-available-until"
-                                            value={assignment.untilDate.slice(0, 10)}
+                                            value={(assignment.availableUntil ?? "").slice(0, 10)}
                                             className="p-2 border mb-2"
                                             onChange={(e) => {
                                                 const d = e.currentTarget.value;
                                                 setAssignment((prev) =>
                                                     prev
-                                                        ? { ...prev, untilDate: `${d}T00:00:00-05:00` }
+                                                        ? { ...prev, availableUntil: `${d}T00:00:00-05:00` }
                                                         : prev,
                                                 );
                                             }}

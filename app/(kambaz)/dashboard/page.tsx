@@ -65,13 +65,13 @@ export default function Dashboard() {
 
   const onAddNewCourse = async () => {
     const newCourse = await client.createCourse(course);
-    dispatch(setCourses([...courses, newCourse]));
+    dispatch(setCourses([...usersCourses, newCourse]));
   };
 
   const onDeleteCourse = async (courseId: string) => {
-    const status = await client.deleteCourse(courseId);
+    await client.deleteCourse(courseId);
     dispatch(
-      setCourses(courses.filter((course: any) => course._id !== courseId)),
+      setCourses(usersCourses.filter((course: any) => course._id !== courseId)),
     );
   };
 
@@ -79,7 +79,7 @@ export default function Dashboard() {
     await client.updateCourse(course);
     dispatch(
       setCourses(
-        courses.map((c: any) => {
+        usersCourses.map((c: any) => {
           if (c._id === course._id) {
             return course;
           } else {
@@ -93,13 +93,13 @@ export default function Dashboard() {
   const courses = showEnrollments ? allCourses : usersCourses;
 
   const createNewEnrollment = async (userId: string, courseId: string) => {
-    await client.enrollUserInCourse(userId, courseId);
+    await client.enrollIntoCourse(userId, courseId);
     dispatch(addNewEnrollment({ user: userId, course: courseId }));
     await fetchCourses();
   };
 
   const removeEnrollment = async (userId: string, courseId: string) => {
-    await client.unenrollUserInCourse(userId, courseId);
+    await client.unenrollFromCourse(userId, courseId);
     dispatch(deleteEnrollment({ user: userId, course: courseId }));
     await fetchCourses();
   };

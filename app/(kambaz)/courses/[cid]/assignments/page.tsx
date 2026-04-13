@@ -94,7 +94,7 @@ export default function Assignments() {
                                                 <span>
                                                     <span className="text-danger">Multiple Modules </span>
                                                     | <strong>Not available until </strong>
-                                                    {formatDate(assignment.availableDate)} |
+                                                    {formatDate(assignment.availableFrom)} |
                                                     <strong> Due </strong>
                                                     {formatDate(assignment.dueDate)} | {assignment.points}
                                                     pts
@@ -107,7 +107,7 @@ export default function Assignments() {
                                             <span>
                                                 <span className="text-danger">Multiple Modules</span>|{" "}
                                                 <strong>Not available until</strong>
-                                                {formatDate(assignment.availableDate)} |
+                                                {formatDate(assignment.availableFrom)} |
                                                 <strong>Due</strong> {formatDate(assignment.dueDate)}|
                                                 {assignment.points}pts
                                             </span>
